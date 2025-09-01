@@ -42,7 +42,7 @@ export default function Layout() {
       {/* Navbar */}
       <div className="z-30 fixed bottom-0 left-0 w-full ">
         <button
-          onClick={() => setModalOpen(true)}
+          onClick={() => (setModalOpen(true), setEditingItem(null))}
           className="justify-self-end mr-4 mb-4 w-12 h-12 rounded-full bg-black shadow flex justify-center items-center "
         >
           <h1 className="text-2xl text-white ">+</h1>
