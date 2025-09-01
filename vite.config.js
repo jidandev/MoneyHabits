@@ -8,12 +8,12 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       manifest: {
-        name: 'ChatVersal',
-        short_name: 'ChatVersal',
-        description: 'A simple real time chat',
-        theme_color: "#000000",
-        background_color: "#000000",
-        display: "fullscreen",
+        name: 'Money Habits',
+        short_name: 'Monits',
+        description: 'A simple managing money',
+        theme_color: "#ffffff",
+        background_color: "#ffffff",
+        display: "standalone",
         icons: [
           {
             src: '/vite.svg',
