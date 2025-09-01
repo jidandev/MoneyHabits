@@ -5,7 +5,6 @@ import { format, addMonths, subMonths } from "date-fns";
 import { useEffect, useRef, useState } from "react";
 import db from "../db";
 
-// Page
 const Home = () => {
   const data = useLiveQuery(() => db.expense.toArray(), []);
   const { openEditModal, date, setDate } = useOutletContext();
@@ -28,11 +27,11 @@ const Home = () => {
     timerRef.current = setTimeout(() => setIsHold(true), 600);
   };
 
-  const handleMouseUp = () => (clearTimeout(timerRef.current));
+  const handleMouseUp = () => clearTimeout(timerRef.current);
   const handleMouseLeave = () => clearTimeout(timerRef.current);
 
   return (
-    <div className="min-h-screen flex flex-col bg-white px-3 select-none">
+    <div className="min-h-screen flex flex-col min-h-0 bg-white px-3 select-none">
       <header className="w-full h-14 flex items-center">
         {!isHold ? <h1 className="text-2xl font-bold">MoneyHabits</h1> :
           <div className="flex w-full items-center justify-between">
@@ -40,7 +39,11 @@ const Home = () => {
               <ArrowLeft size={32} onClick={() => setIsHold(false)} />
               <h1 className="font-medium text-xl">{checkId.length}</h1>
             </div>
-            <TrashSimple className="text-red-500" size={25} weight="fill" onClick={async () => (await db.expense.bulkDelete(checkId), setIsHold(false), setCheckId([]))} />
+            <TrashSimple className="text-red-500" size={25} weight="fill" onClick={async () => {
+              await db.expense.bulkDelete(checkId);
+              setIsHold(false);
+              setCheckId([]);
+            }} />
           </div>
         }
       </header>
@@ -59,15 +62,24 @@ const Home = () => {
         <button onClick={handleNextMonth}><CaretRight size={32} /></button>
       </div>
 
-      <ul>
+      {/* List scrollable */}
+      <ul className="flex-1 overflow-y-auto mt-5 pb-5  mb-28">
         {filteredData?.map(item => (
-          <li className="flex w-full items-center gap-2 mt-5" key={item.id}>
-            <input onChange={(e) => e.target.checked ? setCheckId(prev => [...prev, item.id]) : setCheckId(prev => prev.filter(i => i !== item.id))} className={`${isHold ? "block" : "hidden"}`} type="checkbox" />
-            <li
+          <li className="flex w-full items-center gap-2 mb-2" key={item.id}>
+            <input
+              type="checkbox"
+              className={`${isHold ? "block" : "hidden"}`}
+              onChange={(e) =>
+                e.target.checked
+                  ? setCheckId(prev => [...prev, item.id])
+                  : setCheckId(prev => prev.filter(i => i !== item.id))
+              }
+            />
+            <div
               onTouchStart={handleMouseDown}
               onTouchEnd={handleMouseUp}
               onTouchCancel={handleMouseLeave}
-              className="flex-1  flex items-center justify-between rounded-2xl px-3 py-5 text-black bg-white shadow"
+              className="flex-1 flex items-center justify-between rounded-2xl px-3 py-5 text-black bg-white shadow"
             >
               <div className="flex items-center">
                 <Wallet className="mr-5 bg-red-500 rounded-full p-2 text-white" size={32} weight="fill" />
@@ -79,7 +91,7 @@ const Home = () => {
               <div className="flex gap-2">
                 <PencilSimple size={25} weight="fill" onClick={(e) => (e.stopPropagation(), openEditModal(item))} />
               </div>
-            </li>
+            </div>
           </li>
         ))}
       </ul>
