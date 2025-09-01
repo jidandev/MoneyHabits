@@ -31,12 +31,6 @@ const Home = () => {
   const handleMouseUp = () => (clearTimeout(timerRef.current));
   const handleMouseLeave = () => clearTimeout(timerRef.current);
 
-
-  const handleEdit = (e) => {
-    e.stopPropagation();
-    openEditModal(item);
-  };
-
   return (
     <div className="min-h-screen flex flex-col bg-white px-3 select-none">
       <header className="w-full h-14 flex items-center">
@@ -83,7 +77,7 @@ const Home = () => {
                 </div>
               </div>
               <div className="flex gap-2">
-                <PencilSimple size={25} weight="fill" onClick={handleEdit} />
+                <PencilSimple size={25} weight="fill" onClick={(e) => (e.stopPropagation(), openEditModal(item))} />
               </div>
             </li>
           </li>
