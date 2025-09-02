@@ -1,32 +1,53 @@
-
-import { House, TrendDown, TrendUp } from "phosphor-react";
-import { useState } from "react";
-import { Link, Outlet, useLocation } from "react-router-dom";
-import db from "./db"; // import Dexie
-import { useLiveQuery } from "dexie-react-hooks";
+import { AndroidLogo, House, TrendDown, TrendUp } from "phosphor-react";
+import { useEffect, useState } from "react";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import Modal from "./components/Modal";
 
 export default function Layout() {
   const location = useLocation();
-    const [modalOpen, setModalOpen] = useState(false);
-    const [editingItem, setEditingItem] = useState(null);
-    const [date, setDate] = useState(new Date())
-  
-    // Tentuin table sesuai page aktif
-    let type;
-    if (location.pathname === "/income") type = "income";
-    else if (location.pathname === "/expense") type = "expense";
-    else type = "expense";
-  
-    const openAddModal = () => {
-      setEditingItem(null);
-      setModalOpen(true);
+  const navigate = useNavigate()
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editingItem, setEditingItem] = useState(null);
+  const [date, setDate] = useState(new Date());
+
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [isInstalled, setIsInstalled] = useState(false);
+
+  useEffect(() => {
+    const handler = (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setIsInstalled(false);
     };
-  
-    const openEditModal = (item) => {
-      setEditingItem(item);
-      setModalOpen(true);
+
+    window.addEventListener("beforeinstallprompt", handler);
+    window.addEventListener("appinstalled", () => {
+      setIsInstalled(true);
+      setDeferredPrompt(null);
+      navigate("/"); // langsung redirect ke home setelah install
+    });
+
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handler);
+      window.removeEventListener("appinstalled", () => {});
     };
+  }, [navigate]);
+
+  // Tentuin table sesuai page aktif
+  let type;
+  if (location.pathname === "/income") type = "income";
+  else if (location.pathname === "/expense") type = "expense";
+  else type = "expense";
+
+  const openAddModal = () => {
+    setEditingItem(null);
+    setModalOpen(true);
+  };
+
+  const openEditModal = (item) => {
+    setEditingItem(item);
+    setModalOpen(true);
+  };
 
   return (
     <div>
@@ -47,15 +68,18 @@ export default function Layout() {
         >
           <h1 className="text-2xl text-white ">+</h1>
         </button>
-        <nav className="bg-white w-full h-14 shadow-[0_-1px_3px_rgba(0,0,0,0.1)] flex justify-center items-center gap-20">
+        <nav className=" bg-white w-full h-14 shadow-[0_-1px_3px_rgba(0,0,0,0.1)] flex justify-center items-center gap-14">
           <House size={30} weight="fill" />
           <TrendUp size={30} weight="fill" />
           <TrendDown size={30} weight="fill" />
+          {!isInstalled && deferredPrompt && (
+            <AndroidLogo onClick={() => navigate("/install")} size={30} weight="fill" />
+          )}
         </nav>
       </div>
 
       {/* Halaman */}
-      <Outlet context={{openEditModal, type, date, setDate}} />
+      <Outlet context={{ openEditModal, type, date, setDate, deferredPrompt }} />
     </div>
   );
 }

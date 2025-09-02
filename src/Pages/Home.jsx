@@ -4,16 +4,13 @@ import { useOutletContext } from "react-router-dom";
 import { format, addMonths, subMonths } from "date-fns";
 import { useEffect, useRef, useState } from "react";
 import db from "../db";
+import InstallButton from "../components/InstallButton";
 
 const Home = () => {
   const data = useLiveQuery(() => db.expense.toArray(), []);
   const { openEditModal, date, setDate } = useOutletContext();
   const [isHold, setIsHold] = useState(false)
   const [checkId, setCheckId] = useState([])
-
-  useEffect(() => {
-    console.log(checkId)
-  }, [checkId])
 
   const filteredData = data?.filter(item => item.date === format(date, "MMMM yyyy"));
   const totalExpenses = filteredData?.reduce((sum, item) => sum + item.amount, 0) || 0;

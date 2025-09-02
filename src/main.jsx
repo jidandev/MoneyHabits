@@ -6,16 +6,21 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import ErrorPage from './Pages/404'
 import Home from './Pages/Home'
 import Layout from './Layout'
+import Install from './Pages/Install'
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <Layout />,       // â¬ï¸ Masukin layout
+    element: <Layout />, 
     errorElement: <ErrorPage />,
     children: [
       {
         index: true,
         element: <Home />
+      },
+      {
+        path: "install",
+        element: <Install />
       }
     ]
   },
